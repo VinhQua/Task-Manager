@@ -26,7 +26,8 @@ const getSingleTask = async (req, res) => {
 };
 const createTask = async (req, res) => {
   console.log(req.body);
-  const { name, completed } = req.body;
+  let { name, completed } = req.body;
+  completed = completed === true ? completed : false;
   try {
     const task = await pool.query(
       "INSERT into task (name,completed) VALUES($1,$2) RETURNING *",
@@ -34,12 +35,16 @@ const createTask = async (req, res) => {
     );
     return res.status(200).json({ msg: "created", task: task.rows[0] });
   } catch (error) {
+    res.status(401).json({ msg: error });
     console.log(error);
   }
 };
 const UpdateTask = (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
+
+  try {
+  } catch (error) {}
   res.status(200).json({ msg: `update task with id ${id} and name ${name}` });
 };
 const deleteTask = (req, res) => {
