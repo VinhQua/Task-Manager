@@ -13,6 +13,9 @@ const getSingleTask = async (req, res) => {
   const { id } = req.params;
   try {
     const task = await pool.query("SELECT * FROM task WHERE id = $1", [id]);
+    if (!task) {
+      return res.status(200).json({ msg: `success no task with id${id}` });
+    }
     return res.status(200).json({ msg: `success`, task: task.rows[0] });
   } catch (error) {
     console.log(error);
