@@ -1,25 +1,24 @@
-const { query } = require("express");
-const pool = require("../db/db");
-
+const Task = require("../models/task");
 const getAllTask = async (req, res) => {
   try {
-    const tasks = await pool.query("SELECT * FROM task");
-    return res.status(200).json({ msg: "success", tasks: tasks.rows });
+    const tasks = await Task.findAll();
+    return res.status(200).json({ msg: "success", tasks });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({ msg: error });
   }
 };
 
 const getSingleTask = async (req, res) => {
-  const { id } = req.params;
+  const id = parseInt(req.params.id);
   try {
-    const task = await pool.query("SELECT * FROM task WHERE id = $1", [id]);
+    const task = await Task.findByPk(id);
 
-    if (task.rows.length === 0) {
-      return res.status(200).json({ msg: ` no task with id :${id}` });
+    if (!task) {
+      return res.status(404).json({ msg: ` no task with id:  ${id}` });
     }
 
-    return res.status(200).json({ msg: `success`, task: task.rows[0] });
+    return res.status(200).json({ msg: `success`, task: task });
   } catch (error) {
     // console.log(error);
     return res.status(404).json({ msg: `no task with id${id}` });
@@ -31,14 +30,10 @@ const createTask = async (req, res) => {
   completed = completed === true ? completed : false;
 
   try {
-    const task = await pool.query(
-      "INSERT into task (name,completed) VALUES(trim($1),COALESCE($2,FALSE)) RETURNING *",
-      [name, completed]
-    );
-    return res.status(200).json({ msg: "created", task: task.rows[0] });
+    const task = Task.create(req.body);
+    return res.status(200).json({ msg: "created", task: task });
   } catch (error) {
-    res.status(401).json({ msg: error });
-    console.log(error);
+    res.status(500).json({ msg: error });
   }
 };
 const UpdateTask = async (req, res) => {
@@ -55,7 +50,7 @@ const UpdateTask = async (req, res) => {
     }
     return res.status(200).json({ msg: `update`, task });
   } catch (error) {
-    res.status(401).json({ msg: error });
+    res.status(404).json({ msg: error });
   }
 };
 const deleteTask = async (req, res) => {
@@ -64,11 +59,11 @@ const deleteTask = async (req, res) => {
   try {
     const task = await pool.query("DELETE FROM task WHERE id = $1", [id]);
     if (task.rowCount === 0) {
-      return res.status(200).json({ msg: `no task with id ${id} to delete` });
+      return res.status(404).json({ msg: `no task with id ${id} to delete` });
     }
     return res.status(200).json({ msg: `deleted`, task });
   } catch (error) {
-    res.status(401).json({ msg: error });
+    res.status(404).json({ msg: error });
   }
 };
 
