@@ -41,7 +41,7 @@ const UpdateTask = async (req, res) => {
 
   try {
     const task = await Task.update(req.body,{where:{id}})
-    if (!task) {
+    if (task.length===0) {
       return res.status(404).json({ msg: `no task with id ${id} to update` });
     }
     return res.status(200).json({ msg: `update`, task });
