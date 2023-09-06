@@ -29,9 +29,10 @@ const createTask = async (req, res) => {
   console.log(req.body);
   let { name, completed } = req.body;
   completed = completed === true ? completed : false;
+
   try {
     const task = await pool.query(
-      "INSERT into task (name,completed) VALUES($1,$2) RETURNING *",
+      "INSERT into task (name,completed) VALUES(trim($1),COALESCE($2,FALSE)) RETURNING *",
       [name, completed]
     );
     return res.status(200).json({ msg: "created", task: task.rows[0] });
