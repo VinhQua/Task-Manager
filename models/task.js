@@ -7,10 +7,12 @@ const sequelize = new Sequelize(
 const Task = sequelize.define(
   "Task",
   {
-    name: { type: DataTypes.STRING, allowNull: false },
-    completed: { type: DataTypes.BOOLEAN },
-    assignedBy: { type: DataTypes.STRING },
-    doneBy: { type: DataTypes.STRING },
+    name: { type: DataTypes.STRING, allowNull: false,set(value){
+      this.setDataValue('name',value.trim())
+    } },
+    completed: { type: DataTypes.BOOLEAN,
+    defaultValue:false },
+    
   },
   {
     modelName: "Task",
@@ -20,5 +22,5 @@ const Task = sequelize.define(
 const SyncTable = async () => {
   Task.sync({ alter: true });
 };
-// SyncTable();
+SyncTable();
 module.exports = Task;
