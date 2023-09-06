@@ -25,12 +25,11 @@ const getSingleTask = async (req, res) => {
   }
 };
 const createTask = async (req, res) => {
-  console.log(req.body);
-  let { name, completed } = req.body;
-  completed = completed === true ? completed : false;
+  
+  
 
   try {
-    const task = Task.create(req.body);
+    const task = await Task.create(req.body);
     return res.status(200).json({ msg: "created", task: task });
   } catch (error) {
     res.status(500).json({ msg: error });
