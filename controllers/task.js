@@ -37,32 +37,29 @@ const createTask = async (req, res) => {
 };
 const UpdateTask = async (req, res) => {
   const { id } = req.params;
-  const { name, completed } = req.body;
+  
 
   try {
-    const task = await pool.query(
-      "UPDATE task SET name = $1, completed = $2 WHERE id = $3",
-      [name, completed, id]
-    );
-    if (task.rowCount === 0) {
-      return res.status(200).json({ msg: `no task with id ${id} to update` });
+    const task = await Task.update(req.body,{where:{id}})
+    if (!task) {
+      return res.status(404).json({ msg: `no task with id ${id} to update` });
     }
     return res.status(200).json({ msg: `update`, task });
   } catch (error) {
-    res.status(404).json({ msg: error });
+    res.status(500).json({ msg: error });
   }
 };
 const deleteTask = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const task = await pool.query("DELETE FROM task WHERE id = $1", [id]);
-    if (task.rowCount === 0) {
+    const task = await Task.destroy({where:{id}}) 
+    if (!task) {
       return res.status(404).json({ msg: `no task with id ${id} to delete` });
     }
     return res.status(200).json({ msg: `deleted`, task });
   } catch (error) {
-    res.status(404).json({ msg: error });
+    res.status(500).json({ msg: error });
   }
 };
 
