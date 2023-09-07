@@ -25,9 +25,6 @@ const getSingleTask = async (req, res) => {
   }
 };
 const createTask = async (req, res) => {
-  
-  
-
   try {
     const task = await Task.create(req.body);
     return res.status(200).json({ msg: "created", task: task });
@@ -37,11 +34,10 @@ const createTask = async (req, res) => {
 };
 const UpdateTask = async (req, res) => {
   const { id } = req.params;
-  
 
   try {
-    const task = await Task.update(req.body,{where:{id}})
-    if (task.length===0) {
+    const task = await Task.update(req.body, { where: { id } });
+    if (task[0] === 0) {
       return res.status(404).json({ msg: `no task with id ${id} to update` });
     }
     return res.status(200).json({ msg: `update`, task });
@@ -53,7 +49,7 @@ const deleteTask = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const task = await Task.destroy({where:{id}}) 
+    const task = await Task.destroy({ where: { id } });
     if (!task) {
       return res.status(404).json({ msg: `no task with id ${id} to delete` });
     }

@@ -7,12 +7,20 @@ const sequelize = new Sequelize(
 const Task = sequelize.define(
   "Task",
   {
-    name: { type: DataTypes.STRING, allowNull: false,set(value){
-      this.setDataValue('name',value.trim())
-    } },
-    completed: { type: DataTypes.BOOLEAN,
-    defaultValue:false },
-    
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        len: {
+          args: [0, 20],
+          msg: "Maximum 20 characters",
+        },
+      },
+      set(value) {
+        this.setDataValue("name", value.trim());
+      },
+    },
+    completed: { type: DataTypes.BOOLEAN, defaultValue: false },
   },
   {
     modelName: "Task",
